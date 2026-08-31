@@ -1,0 +1,12 @@
+{
+  "domain": "oasis",
+  "name": "Oasis Smart Lights",
+  "codeowners": ["@ruminaider"],
+  "config_flow": true,
+  "documentation": "https://github.com/longweekendprojects/oasis-lights",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/longweekendprojects/oasis-lights/issues",
+  "requirements": [],
+  "version": "0.3.1"
+}

@@ -1,0 +1,54 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Oasis Smart Lights",
+        "description": "How do you sign in to the Oasis app?",
+        "menu_options": {
+          "apple": "Sign in with Apple or Google",
+          "password": "Email address and password",
+          "token": "Paste an existing session token",
+          "bridge": "Import from the Oasis bridge on this network (easiest)"
+        }
+      },
+      "password": {
+        "title": "Sign in to Oasis",
+        "description": "Use the same email address and password as the Oasis app.",
+        "data": {
+          "username": "Email address",
+          "password": "Password"
+        }
+      },
+      "apple": {
+        "title": "Sign in with Apple or Google",
+        "description": "1. Open this link and sign in:\n\n{apple_url}\n\n(Use {google_url} for Google, or {any_url} to choose on the page.)\n\n2. Your browser will end on an error saying the address is invalid, because the final address belongs to the Oasis phone app. That means it worked.\n\n3. Copy that whole address, starting with rainmaker://, and paste it below.",
+        "data": {
+          "redirect_url": "The rainmaker:// address"
+        }
+      },
+      "token": {
+        "title": "Use an existing Oasis session",
+        "description": "Paste the refresh token from a session that already works. Use this when signing in fresh keeps being refused even though your credentials are correct.",
+        "data": {
+          "refresh_token": "Refresh token"
+        }
+      },
+      "bridge": {
+        "title": "Import from the Oasis bridge",
+        "description": "The address below was filled in automatically. Select Submit and Home Assistant will collect the sign-in for you.",
+        "data": {
+          "bridge_url": "Bridge address"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the Oasis service. Please try again.",
+      "invalid_auth": "Oasis rejected those credentials.",
+      "no_code": "That address has no sign-in code in it. Copy the whole address, starting with rainmaker://.",
+      "sign_in_refused": "Oasis refused the sign-in. Please start the sign-in link again."
+    },
+    "abort": {
+      "already_configured": "This Oasis account is already set up."
+    }
+  }
+}
