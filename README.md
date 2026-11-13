@@ -165,8 +165,8 @@ and that is already solved by your existing remote access.
 
 ## Controls
 
-Each bulb gets a light entity with power and brightness, plus a "Warmth" select carrying the same six
-named presets the phone app uses: Bright, Neutral, Soft, Glow, Amber, and Candle. The select reports the
+Each bulb gets a light entity with power and brightness, plus a "Warmth" select carrying the
+named presets the phone app uses: Bright, Neutral, Soft, Glow, Amber, Candle, Dusk, Maui, and Red. The select reports the
 preset nearest the bulb's actual colour temperature, so a warmth chosen in the app or by the bulb's own
 schedule still shows correctly rather than reading as blank.
 
@@ -174,8 +174,8 @@ schedule still shows correctly rather than reading as blank.
 preset buttons beneath. Paste it into the dashboard's raw configuration editor.
 
 The firmware clamps colour temperature at 4000 K even though it accepts higher values without
-complaint, and it honours values below 2000 K. The presets span the range it actually applies, and Candle
-matches the 2000 K the app reports for its warmest setting.
+complaint, and it honours values below 2000 K. The presets span the range it actually applies. Candle
+matches the 2000 K the app reports for that setting, Dusk is 1500 K, Maui is 1100 K, and Red is 1000 K.
 
 ## Caveats
 

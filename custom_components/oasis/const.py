@@ -31,7 +31,9 @@ DEFAULT_MAX_KELVIN = 4000
 
 # The Oasis app offers named warmth presets rather than a raw Kelvin slider.
 # These mirror it, spread across the range the hardware actually honours, with
-# Candle matching the 2000 K the app reports for its warmest setting.
+# Candle matching the 2000 K the app reports for that setting. Dusk and Maui
+# arrived in app version 3.0.0; their values were read from bulbs set to those
+# tones in the app.
 PRESETS: dict[str, int] = {
     "Bright": 4000,
     "Neutral": 3600,
@@ -39,6 +41,8 @@ PRESETS: dict[str, int] = {
     "Glow": 2800,
     "Amber": 2400,
     "Candle": 2000,
+    "Dusk": 1500,
+    "Maui": 1100,
     "Red": 1000,
 }
 
