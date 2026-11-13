@@ -20,7 +20,9 @@ CONF_AUTH_MODE = "auth_mode"
 AUTH_MODE_PASSWORD = "password"
 AUTH_MODE_OAUTH = "oauth"
 
-DEFAULT_SCAN_INTERVAL = 30
+# One request returns every bulb. The bulbs report to the cloud about every
+# 20 seconds, so a shorter interval mainly cuts the wait added on top of that.
+DEFAULT_SCAN_INTERVAL = 10
 
 # The bulbs report colour temperature in Kelvin. These bounds are overridden per
 # device whenever the node's own parameter config declares them, which this

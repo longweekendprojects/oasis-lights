@@ -17,11 +17,19 @@ from .const import CONF_REFRESH_TOKEN, DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-# The cloud keeps reporting the previous value for 15-25 seconds after a write.
-# Commanded values are held for longer than that so the UI does not snap back to
-# the stale reading, but not indefinitely, so a command the bulb never applied
-# eventually gives way to the truth.
-PENDING_TTL = 45.0
+# A bulb acknowledges a command within about a second, but it reports its state
+# to the cloud only on a cycle of about 20 seconds, so the cloud keeps the
+# previous value for up to that long. Two rules follow.
+#
+# A commanded value is always shown for PENDING_SETTLE seconds, even when the
+# cloud already reports the same value. The cloud's value may be left over from
+# before an earlier command; trusting it would drop the hold, and the next report
+# of that earlier command would then flip the entity to the wrong state.
+#
+# After that the commanded value stays until the cloud agrees, but only up to
+# PENDING_TTL, so a command the bulb never applied gives way to the truth.
+PENDING_SETTLE = 30.0
+PENDING_TTL = 60.0
 
 
 class OasisCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
@@ -36,7 +44,8 @@ class OasisCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         )
         self.client = client
         self.entry = entry
-        self._pending: dict[str, dict[str, tuple[Any, float]]] = {}
+        # key -> parameter name -> (commanded value, settled at, expires at)
+        self._pending: dict[str, dict[str, tuple[Any, float, float]]] = {}
 
     @staticmethod
     def key(node_id: str, device: str) -> str:
@@ -44,10 +53,10 @@ class OasisCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
 
     def note_command(self, key: str, payload: dict[str, Any]) -> None:
         """Remember what was just commanded so the UI can show it immediately."""
-        deadline = time.monotonic() + PENDING_TTL
+        now = time.monotonic()
         slot = self._pending.setdefault(key, {})
         for name, value in payload.items():
-            slot[name] = (value, deadline)
+            slot[name] = (value, now + PENDING_SETTLE, now + PENDING_TTL)
 
     def params_for(self, key: str) -> dict[str, Any]:
         """Return a bulb's parameters with any still-unconfirmed command applied."""
@@ -56,9 +65,9 @@ class OasisCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
         if not slot:
             return params
         now = time.monotonic()
-        for name, (value, deadline) in list(slot.items()):
-            if deadline < now or params.get(name) == value:
-                del slot[name]      # expired, or the cloud caught up
+        for name, (value, settled, deadline) in list(slot.items()):
+            if deadline < now or (settled < now and params.get(name) == value):
+                del slot[name]      # expired, or settled and the cloud agrees
                 continue
             params[name] = value
         if not slot:

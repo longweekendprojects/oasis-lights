@@ -45,7 +45,16 @@ Control depends on Mixtiles' servers. The bulbs expose no local network API at a
 closed, they answer no discovery protocol, and they run no mDNS responder, so there is no local
 fallback and no Matter support.
 
-The cloud reports state 15 to 25 seconds after a change. Home Assistant updates the entity immediately
-on a command, then reconciles on the next poll, so brief disagreement after a change is expected.
+A bulb acknowledges a cloud command in about one second, but it reports its state to the cloud only
+about every 20 seconds. Home Assistant therefore shows a commanded value at once and holds it for 30
+seconds, then until the cloud agrees, for at most 60 seconds. Without the hold, two commands sent
+close together made the entity flip to the first command's state when its late report arrived.
 
-Changes made in the Oasis app appear here within the 30 second polling interval.
+Measured on firmware 2.32.7 on 2026-11-13: the RainMaker command API (`POST /user/nodes/cmd`,
+`cmd: 1`, `data: {"params": {...}}`) returned the bulb's own success reply 0.8 to 1.1 seconds after
+seven commands, while the bulb's state record for the same commands appeared 1 to 15 seconds later,
+on a 20 second grid. The Oasis app sends its cloud commands with the same `PUT /user/nodes/params`
+call this integration uses. How fast the lamp itself changes was not measured.
+
+Home Assistant polls every 10 seconds. A change made in the Oasis app appears here after the bulb's
+next report plus one poll, so within about 30 seconds.
